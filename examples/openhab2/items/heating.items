@@ -1,0 +1,66 @@
+// itemtype itemname "labeltext [stateformat]" <iconname> (group1, group2, ...) ["tag1", "tag2", ...] {bindingconfig}
+// Icons here: https://www.openhab.org/docs/configuration/iconsets/classic/
+
+Group Bedroom
+Group AdultsBedroom (Bedroom)
+Group ChildrensBedroom (Bedroom)
+Group Basement
+Group GroundFloor
+Group FirstFloor
+Group Attic
+Group Batteries
+Group ThermostatMode
+Group:Switch:OR(ON,OFF) Batteries  "Low Batteries [%d]"
+Group:Number:MAX Valves  "Maximum TRV open [%d%%]"
+
+// Virtual holiday switch
+Switch holiday_switch "Holiday mode"
+
+
+// Boiler switch
+Switch boiler_switch "Boiler switch" <heating> (Basement) {gpio="pin:4 initialValue:low"}
+
+// Wall thermostat
+Number   wall_thermostat_set_temp          "Set Temperature [%.1f °C]"     <Temperature>  (Thermostat,ThermostatSetter,GroundFloor)  {channel="max:thermostat:KET0436364:OET1030464:set_temp"}
+Number   wall_thermostat_get_temp          "Temperature [%.1f °C]"     <Temperature>  (Thermostat,GroundFloor)  {channel="max:wallthermostat:KET0436364:OET1446040:actual_temp"}
+
+// Dining room
+Number   thermostat_dining_room_set_temp          "Set Temperature [%.1f °C]"     <Temperature>  (Thermostat,ThermostatSetter,GroundFloor)  {channel="max:thermostat:KET0436364:OET1030464:set_temp"}
+String   thermostat_dining_room_mode          "Mode"       (Thermostat,ThermostatMode)  {channel="max:thermostat:KET0436364:OET1030464:mode"}
+Number   thermostat_dining_room_get_temp          "Actual Temperature [%.1f °C]"     <Temperature>  (Thermostat,GroundFloor)  {channel="max:thermostat:KET0436364:OET1030464:actual_temp"}
+Switch   thermostat_dining_room_battery          "Low battery (Dining room)"     <Battery>  (GroundFloor,Batteries)  {channel="max:thermostat:KET0436364:OET1030464:battery_low"}
+Number   thermostat_dining_room_valve          "Valve position (Dining room)"     <Pressure>  (GroundFloor,Valves)  {channel="max:thermostat:KET0436364:OET1030464:valve"}
+
+// Living room
+Number   thermostat_living_room_set_temp          "Set Temperature [%.1f °C]"     <Temperature>  (Thermostat,ThermostatSetter,GroundFloor)  {channel="max:thermostat:KET0436364:OET1040666:set_temp"}
+String   thermostat_living_room_mode          "Mode"       (Thermostat,ThermostatMode)  {channel="max:thermostat:KET0436364:OET1040666:mode"}
+Number   thermostat_living_room_get_temp          "Actual Temperature [%.1f °C]"     <Temperature>  (Thermostat,GroundFloor)  {channel="max:thermostat:KET0436364:OET1040666:actual_temp"}
+Switch   thermostat_living_room_battery          "Low battery (Living room)"     <Battery>  (GroundFloor,Batteries)  {channel="max:thermostat:KET0436364:OET1040666:battery_low"}
+Number   thermostat_living_room_valve          "Valve position (Living room)"     <Pressure>  (GroundFloor,Valves)  {channel="max:thermostat:KET0436364:OET1040666:valve"}
+
+// Kitchen
+Number   thermostat_kitchen_set_temp          "Set Temperature [%.1f °C]"     <Temperature>  (Thermostat,ThermostatSetter,GroundFloor)  {channel="max:thermostat:KET0436364:MET1821362:set_temp"}
+String   thermostat_kitchen_mode          "Mode"       (Thermostat,ThermostatMode)  {channel="max:thermostat:KET0436364:MET1821362:mode"}
+Number   thermostat_kitchen_get_temp          "Actual Temperature [%.1f °C]"     <Temperature>  (Thermostat,GroundFloor)  {channel="max:thermostat:KET0436364:MET1821362:actual_temp"}
+Switch   thermostat_kitchen_battery          "Low battery (Kitchen)"     <Battery>  (GroundFloor,Batteries)  {channel="max:thermostat:KET0436364:MET1821362:battery_low"}
+Number   thermostat_kitchen_valve          "Valve position (Kitchen)"     <Pressure>  (GroundFloor,Valves)  {channel="max:thermostat:KET0436364:MET1821362:valve"}
+
+// Study
+Number   thermostat_study_set_temp          "Set Temperature [%.1f °C]"     <Temperature>  (Thermostat,ThermostatSetter,Basement)  {channel="max:thermostat:KET0436364:OET1030384:set_temp"}
+String   thermostat_study_mode          "Mode"       (Thermostat,ThermostatMode)  {channel="max:thermostat:KET0436364:OET1030384:mode"}
+Number   thermostat_study_get_temp          "Acutal Temperature [%.1f °C]"     <Temperature>  (Thermostat,Basement)  {channel="max:thermostat:KET0436364:OET1030384:actual_temp"}
+Switch   thermostat_study_battery          "Low battery (Study)"     <Battery>  (Basement,Batteries)  {channel="max:thermostat:KET0436364:OET1030384:battery_low"}
+Number   thermostat_study_valve          "Valve position (Study)"     <Pressure>  (Basement,Valves)  {channel="max:thermostat:KET0436364:OET1030384:valve"}
+
+// Guest room
+Number   thermostat_guest_room_set_temp          "Set Temperature [%.1f °C]"     <Temperature>  (Thermostat,ThermostatSetter,Basement)  {channel="max:thermostat:KET0436364:OET1030400:set_temp"}
+String   thermostat_guest_room_mode          "Mode"       (Thermostat,ThermostatMode)  {channel="max:thermostat:KET0436364:OET1030400:mode"}
+Switch   thermostat_guest_room_battery          "Low battery (Guest room)"     <Battery>  (Basement,Batteries)  {channel="max:thermostat:KET0436364:OET1030400:battery_low"}
+Number   thermostat_guest_room_valve          "Valve position (Guest room)"     <Pressure>  (Basement,Valves)  {channel="max:thermostat:KET0436364:OET1030400:valve"}
+
+// Master bedroom
+Number   thermostat_master_bedroom_set_temp          "Set Temperature [%.1f °C]"     <Temperature>  (Thermostat,ThermostatSetter,FirstFloor)  {channel="max:thermostat:KET0436364:OET1040288:set_temp"}
+String   thermostat_master_bedroom_mode          "Mode"       (Thermostat,ThermostatMode)  {channel="max:thermostat:KET0436364:OET1040288:mode"}
+Number   thermostat_master_bedroom_get_temp          "Actual Temperature [%.1f °C]"     <Temperature>  (Thermostat,FirstFloor)  {channel="max:thermostat:KET0436364:OET1040288:actual_temp"}
+Switch   thermostat_master_bedroom_battery          "Low battery (Master bedroom)"     <Battery>  (FirstFloor,Batteries)  {channel="max:thermostat:KET0436364:OET1040288:battery_low"}
+Number   thermostat_master_bedroom_valve          "Valve position (Master bedroom)"     <Pressure>  (FirstFloor,Valves)  {channel="max:thermostat:KET0436364:OET1040288:valve"}

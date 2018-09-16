@@ -1,0 +1,14 @@
+var boolean sentMessage = false
+
+rule "Batteries need replacing"
+when
+  Member of Batteries changed
+then
+  var low = Batteries.members.filter[ i | i.state == ON ]
+  logInfo("Batteries low: ", low.forEach [ item | items.state.toString() ])
+  var anyLow = low.size > 0
+  if(anyLow && !setMessage) {
+    sendMail("me@gmail.com", "Batteries need changing:", low.forEach [ item | item.name ])
+    sentMessage = true
+  }
+end

@@ -1,0 +1,11 @@
+// https://docs.openhab.org/configuration/sitemaps.html#element-type-setpoint
+sitemap default label="Heating"
+{
+    Switch item=holiday_switch hoplabel="Holiday mode"
+    Switch item=boiler_switch label="Boiler"
+    Switch item=networkdevice_sebphone_present label="Seb at home"
+    Text item=wall_thermostat_get_temp label="Living space actual [%.1f °C]"
+    Setpoint item=wall_thermostat_set_temp label="Living space target [%.1f °C]" step=1
+    Group item=Batteries label="Low batteries [%d]"
+    Group item=Valves label="Max valve position [%d%%]"
+}

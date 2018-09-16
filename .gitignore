@@ -1,0 +1,8 @@
+.ipynb_checkpoints
+cache.sqlite
+*~
+.pytest*
+__pycache__
+.#*
+.coverage
+environment

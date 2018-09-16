@@ -1,0 +1,30 @@
+rule "A valve changed - switch boiler"
+when
+    Member of Valves changed
+then
+    var allClosed = Valves.members.filter[ i | i.state == 0 ].size == Valves.members.size
+    if(boiler_switch.state == ON && allClosed) {
+       boiler_switch.sendCommand(OFF)
+       logDebug("boiler", "Boiler turned off")
+       }
+    if(boiler_switch.state == OFF && !allClosed) {
+       boiler_switch.sendCommand(ON)
+       logDebug("boiler", "Boiler turned on")
+      }
+end
+
+
+rule "Holiday mode on"
+when
+     Item holiday_switch changed to ON
+then
+     ThermostatMode.members.forEach(item, i | sendCommand(item, "MANUAL"))
+     ThermostatMode.members.forEach(item, i | sendCommand(item, 14))
+end
+
+rule "Holiday mode off"
+when
+     Item holiday_switch changed to OFF
+then
+     ThermostatMode.members.forEach(item, i | sendCommand(item, "AUTOMATIC"))
+end
