@@ -1,14 +1,12 @@
 # Heating
 
-We're a family of four. Each day has different rythmns for each of us. We move between rooms in fairly predictable patterns.
+We're a family of four.  I like it cool in my bedroom all day and night. The kids need their rooms to be a little warm when they get up in the week, and for longer at the weekends. The living room should be comfortable in the evening.  And so on.
 
-I like it cool in my bedroom all day and night. The kids need their rooms to be a little warm when they get up in the week, and for longer at the weekends. The living room should be comfortable in the evening.  And so on.
-
-The default heating algorithm, "heat the entire house based on the temperature of the living room and an arbitrary timer", means we waste a lot of energy.
+The UK's default heating algorithm, "heat the entire house based on the temperature of the living room and an arbitrary timer", means we waste a lot of energy.
 
 The solution is to have a custom programme on every single radiator in the house.
 
-This setup cost me about £200, and several days of my life in tweaking and tinkering.  I won't know for a year how much it saves me on energy bills, but I'm guessing quite a lot.
+This setup cost me about £200 (plus several days of time, but it was fun).  I won't know for a year how much it saves me on energy bills, but I'm guessing quite a lot.
 
 Basic controls from my phone:
 
@@ -20,7 +18,9 @@ Lots of nice graphs for tracking energy usage and heat levels:
 
 ## Hardware setup
 
-It's something like this: <img src="https://user-images.githubusercontent.com/211271/45876801-ab80fe80-bd93-11e8-9c4f-a5293d8861e5.png" alt="crappy schematic of the system" width="300px">
+It's something like this:
+
+<img src="https://user-images.githubusercontent.com/211271/45876801-ab80fe80-bd93-11e8-9c4f-a5293d8861e5.png" alt="crappy schematic of the system" width="300px">
 
 The most expensive part is the thermostatic radiator control system.
 
@@ -79,11 +79,11 @@ There's a few open source home automation hubs out there. I picked Openhab2 beca
 
 To start with, you have to pair the thermostatic heads (and wall thermostat) with the cube, so it knows what it can address (the documentation calls this "teaching-in"). You need to start the Max! software to access the Cube's control interface.  This is Java software which runs as a web server on your computer that you access using your web browser. It is packaged for Windows and Mac but a community member has helpfully [repackaged it for Linux](https://github.com/shawn-ogg/maxapp_linux_installer).
 
-You probably don't *have* to use that software: the protocol [has been reverse engineered](https://github.com/Bouni/max-cube-protocol), of which there are various implementations around the web, but none of them (that I've found) are complete. Most of these can report on current thermostat state and set current temperature, but that's all.
+Theoretically, you don't *have* to use that software: the protocol [has been reverse engineered](https://github.com/Bouni/max-cube-protocol), of which there are various implementations around the web, but none of them (that I've found) are complete. Most of these can report on current thermostat state and set current temperature, but that's all.
 
-Once you've taught-in the thermostats, you can set their daily schedule: up to 7 heat/time pairs per day, per thermostatic head. The EQ-Max! software is very clunky for this, particularly as you typically want to do a lot of cut-and-paste, so I've [added a command to python-maxcube-api](https://github.com/sebbacon/python-maxcube-api/tree/add-program-setting) to allow you to save and set programmes in JSON.
+Once you've taught-in the thermostats, you can set their daily schedule: up to 7 heat/time pairs per day, per thermostatic head. The EQ-Max! software is very clunky for this, particularly as you typically want to do a lot of cut-and-paste, so I've [added a command to python-maxcube-api](https://github.com/sebbacon/python-maxcube-api/tree/add-program-setting) to allow you to save and set programmes in JSON.  I also used the official software to group the three radiators and the wall thermostat in our open plan living space into one room.
 
-When playing with scripting, I found TRVs would randomly stop responding. It turns out this is because of the "1% rule" - each RF band has a "duty cycle" which is the maximum ratio of time on the air per hour. Basically, 1% means you can speak 36s per hour.
+*Note*: When playing with scripting, I found TRVs would randomly stop responding. It turns out this is because of the "1% rule" - each RF band has a "duty cycle" which is the maximum ratio of time on the air per hour. Basically, 1% means you can speak 36s per hour.
 
 ### openHABian
 
@@ -94,7 +94,7 @@ I ended up tweaking it quite a lot so not sure I'd start with it next time, but 
 
 ### OpenHab2
 
-The OpenHab integration allows you to:
+The OpenHab2 MAX! Cube integration allows you to:
 
 * Set individual thermostat temperatures
 * Get "current" (see below) thermostat temperatures
@@ -107,9 +107,9 @@ One you have paired the thermostatic heads with the cube, you can progress to ad
 * Add the Cube by visiting the discovery inbox in the Paper UI
 * Thermostats should start appearing in the inbox. Add them and they will appear as Items in the control panel
 
-TODO: I'm not entirely sure if you actually have to set up things in the inbox as well as in files
+*TODO: I'm not entirely sure if you actually have to set up things in the inbox as well as in files. This is just the order I did it in. Check!*
 
-Now you're ready to set up text-based configuration files which will allow you to
+Now you're ready to set up text-based configuration files which will allow you to:
 
 * View and control the system from your phone
 * Set up rules to turn the boiler on and off, email you when batteries are low, etc
@@ -164,7 +164,7 @@ then
 end
 ```
 
-The full documentation for rules is [here]](https://www.openhab.org/docs/configuration/rules-dsl.html). [My configuration](https://github.com/sebbacon/home-automation/tree/master/examples/openhab2/rules) also has a rule for a software switch to turn on "holiday mode" (every thermostat set to 14C), so I can flip it off when I'm leaving the house for a day or two.  There's also a rule to email me when any batteries are low.
+The full documentation for rules is [here](https://www.openhab.org/docs/configuration/rules-dsl.html). [My configuration](https://github.com/sebbacon/home-automation/tree/master/examples/openhab2/rules) also has a rule for a software switch to turn on "holiday mode" (every thermostat set to 14C), so I can flip it off when I'm leaving the house for a day or two.  There's also a rule to email me when any batteries are low.
 
 Finally, you can set up a simple frontend (with switches, sliders, etc) using a `sitemap`.  The sitemap driving the phone screenshot above looks like this:
 
@@ -179,8 +179,8 @@ sitemap default label="Heating"
     Setpoint item=wall_thermostat_set_temp label="Living space target [%.1f °C]" step=1
     Group item=Batteries label="Low batteries [%d]"
     Group item=Valves label="Max valve position [%d%%]"
-}```
-
+}
+```
 
 ### Grafana
 
@@ -196,6 +196,10 @@ As well as installing the openhab client (which displays `sitemaps` configured a
 Tasker is a very powerful and complex system for setting up rules for automating stuff on your phone. I've installed it because I something that detects my presence at home, so I can build up some rules for automatically turning on holiday mode.  Tasker can use proximity to specific mobile phone masts for this, which uses considerably less battery than GPS. When I'm near a given list of masts, I've set up Tasker to send an HTTP POST to the Openhab REST API to toggle a "Phone presence" switch.
 
 If I decide it's accurate enough, the plan is to put it on my partner's phone too, and then when none of us is in, automatically pop up Openhab on my phone with a message asking if I want to turn on Vacation mode.
+
+## Network
+
+In order to access graphana and the openhab sitemap from my phone, I set up my router's firewall to forward direct to the Pi.  You'll save yourself some hassle if you forward between identical ports (e.g. `3333` on your router to `3333` on your Pi).
 
 ## Backups
 
