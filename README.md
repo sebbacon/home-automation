@@ -64,11 +64,11 @@ For my main living space, which is open plan with the kitchen, I bought a [wall 
 
 ### Raspberry Pi and relay
 
-I have a combi boiler, which needs to be turned off when there is no heat demand.  I did this with a Raspberry Pi 3+ and a relay. I'm not particularly knowledgable about electronics, so I opted for a pre-built relay board ([ModMyPi PiOT Relay Board](https://www.modmypi.com/raspberry-pi/relays-and-home-automation-1032/relay-boards-1033/modmypi-piot-relay-board)) and [case](https://www.modmypi.com/raspberry-pi/cases-183/raspberry-pi-b-plus2-and-3-cases-1122/cases-for-hats-and-boards-1133/modmypi-piot-relay-board-case-b-plus23) rather than faffing around with resistors, dealing with GPIO chatter, etc.  I'm pleased with the quality and it was straightforward to assemble and use.
+I'm not particularly knowledgable about electronics, so I opted for a pre-built relay board ([ModMyPi PiOT Relay Board](https://www.modmypi.com/raspberry-pi/relays-and-home-automation-1032/relay-boards-1033/modmypi-piot-relay-board)) and [case](https://www.modmypi.com/raspberry-pi/cases-183/raspberry-pi-b-plus2-and-3-cases-1122/cases-for-hats-and-boards-1133/modmypi-piot-relay-board-case-b-plus23) rather than faffing around with resistors,  GPIO chatter, etc.  I'm pleased with the quality of this unit and case, and it was straightforward to assemble and use.
 
-I opted to use the Pi as the home automation hub (running OpenHabian), and I've plugged a 4TB USB drive into a USB port for backups, and doubling up as a simple NAS.
+It makes sense to use the Pi as the home automation hub (running OpenHabian), and I've plugged a 4TB USB drive into a USB port for backups, and doubling up as a simple NAS.
 
-The relay takes the place of the old thermostatic wall switch. For me, this had been wired from the Combi Boiler with a neutral and two lives. The switch breaks the live wire; the neutral was there to supply power to the thermostat.  Replacing the wall switch involved cutting back and taping the neutral (not needed), and then attaching the live to COM ("common") and NC ("normally closed") terminals on one of the relays.  The PiOT Relay Board has a nice interface for binding a relay to a GPIO which can then be addressed from the Pi.
+The relay takes the place of the old thermostatic wall switch. My thermostat was wired from the combi-boiler with a neutral and two lives (refer to your boiler manual for details). The switch in the thermostat breaks the live; the neutral suppled power to the thermostat.  Replacing the old wall thermostat involved cutting back and taping the neutral (not needed), and then attaching the two lives to `COM` ("common") and `NO` ("normally open") terminals on one of the relays.  The PiOT Relay Board has a nice interface for binding a relay to a GPIO which can then be addressed from the Pi.
 
 ## Software setup
 
@@ -109,9 +109,85 @@ One you have paired the thermostatic heads with the cube, you can progress to ad
 
 TODO: I'm not entirely sure if you actually have to set up things in the inbox as well as in files
 
+Now you're ready to set up text-based configuration files which will allow you to
+
+* View and control the system from your phone
+* Set up rules to turn the boiler on and off, email you when batteries are low, etc
+
+Each thermostatic head has a 6-byte RF address and a 10-character serial number. Both of these can be inspected in the OpenHab Paper UI. The serial number is also on a sticker inside the battery compartment in the thermostatic head.
+
+When setting a programme via the python script I wrote, you need to address each device by its RF address; when addressing devices via Openhab, you use the serial.  For example, a device might look like this (expressed as JSON):
+
+```json
+  {
+    "rf_address": "150A88",
+    "room_id": 2,
+    "name": "Kitchen",
+    "serial": "MET1821362",
+    "battery": 0,
+  }
+```
+
+To address it via Openhab configuration files, you need to create a [`thing`](https://www.openhab.org/docs/concepts/things.html) and one or more [`channel`](https://www.openhab.org/docs/concepts/things.html#channels)s. A `thing` plus `channel` is called an `item`, and `items` are how you build user interfaces and automatic rules.
+
+Here's a single line of configuration:
+
+```
+Number   thermostat_kitchen_set_temp          "Set Temperature [%.1f °C]"     <Temperature>  (Thermostat,ThermostatSetter,GroundFloor)  {channel="max:thermostat:KET0436364:MET1821362:set_temp"}
+```
+
+This defines something called `thermostat_kitchen_set_temp`. It allows you to set the temperature of a thermostat.  The final part (`channel=..`) is the critical part. It says that the thing is a max thermostate, addressed at `KET0436364` (the Cube serial) `:MET1821362` (the thermostatic head serial), and we're interested in the `set_temp` channel.  Most of the other fields are related to how the thing wil be displayed on a screen. The part in brackets assigns the thing to three different Groups.
+
+The boiler relay can be defined at its gpio pin, thus:
+```
+Switch boiler_switch "Boiler switch" <heating> (Basement) {gpio="pin:4 initialValue:low"}
+```
+
+The `items` format is described in full [here](https://www.openhab.org/docs/configuration/things.html#defining-things).
+
+Once you have set up all your things (full example [here](https://github.com/sebbacon/home-automation/blob/master/examples/openhab2/items/heating.items)), you can set up rules.  Here's the rule for turning the boiler on and off:
+
+```
+rule "A valve changed - switch boiler"
+when
+    Member of Valves changed
+then
+    var allClosed = Valves.members.filter[ i | i.state == 0 ].size == Valves.members.size
+    if(boiler_switch.state == ON && allClosed) {
+       boiler_switch.sendCommand(OFF)
+       logDebug("boiler", "Boiler turned off")
+       }
+    if(boiler_switch.state == OFF && !allClosed) {
+       boiler_switch.sendCommand(ON)
+       logDebug("boiler", "Boiler turned on")
+      }
+end
+```
+
+The full documentation for rules is [here]](https://www.openhab.org/docs/configuration/rules-dsl.html). [My configuration](https://github.com/sebbacon/home-automation/tree/master/examples/openhab2/rules) also has a rule for a software switch to turn on "holiday mode" (every thermostat set to 14C), so I can flip it off when I'm leaving the house for a day or two.  There's also a rule to email me when any batteries are low.
+
+Finally, you can set up a simple frontend (with switches, sliders, etc) using a `sitemap`.  The sitemap driving the phone screenshot above looks like this:
+
+```
+// https://docs.openhab.org/configuration/sitemaps.html#element-type-setpoint
+sitemap default label="Heating"
+{
+    Switch item=holiday_switch hoplabel="Holiday mode"
+    Switch item=boiler_switch label="Boiler"
+    Switch item=networkdevice_sebphone_present label="Seb at home"
+    Text item=wall_thermostat_get_temp label="Living space actual [%.1f °C]"
+    Setpoint item=wall_thermostat_set_temp label="Living space target [%.1f °C]" step=1
+    Group item=Batteries label="Low batteries [%d]"
+    Group item=Valves label="Max valve position [%d%%]"
+}```
+
+
 ### Grafana
 
-### Boiler control
+[This guide covers what you need to know](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761)
+
+It's a bit of a fiddle working out how to set up new graphs for the first time, but worth the hassle, as it allows you to fine-tune your programmes.
+
 
 ### Mobile phone
 
