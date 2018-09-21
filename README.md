@@ -38,10 +38,12 @@ A wall thermostat (for better ambient temperature measurement, and convenient se
 
 By all accounts the cube is a little buggy and forgets its associations between the TRV devices and the named programs. Instead of using the cube, you can consider using the open source `culfw` software, and either (a) flashing the cube ([German instructions](https://forum.fhem.de/index.php/topic,38404.0.html?PHPSESSID=g9gjrbkpt56p5qnv1on6nnlr16)) or (b) using your own CUL module and [flashing that](https://forum.pimatic.org/topic/2483/pimatic-maxcul-and-max-cube-with-aculfw-acting-as-cul/45).
 
+A traditional setup turns all the radiators on and off with a thermostatic switch attached to the boiler (a combi-boiler in my case). This needs to be turned off automatically when there is no heat demand.  I did this with a Raspberry Pi 3+ and a relay.  I added a physical switch as an override
 
-### Random observations
+If the Raspberry Pi were to break, we'd want to to have confidence we could still turn the boiler on and off, so I added a physical switch which will bypass the Pi when turned on.  It looks like this:
 
-When playing with scripting, I found TRVs would randomly stop responding. It turns out this is because of the "1% rule" - each RF band has a "duty cycle" which is the maximum ratio of time on the air per hour. Basically, 1% means you can speak 36s per hour.
+<img src="https://user-images.githubusercontent.com/211271/45892046-f2381e00-bdbe-11e8-834f-0d0eaecc869a.png" alt="photo of pi, hard disk, override switch and boiler" width="300px">
+
 
 ### Heads
 
@@ -81,6 +83,7 @@ You probably don't *have* to use that software: the protocol [has been reverse e
 
 Once you've taught-in the thermostats, you can set their daily schedule: up to 7 heat/time pairs per day, per thermostatic head. The EQ-Max! software is very clunky for this, particularly as you typically want to do a lot of cut-and-paste, so I've [added a command to python-maxcube-api](https://github.com/sebbacon/python-maxcube-api/tree/add-program-setting) to allow you to save and set programmes in JSON.
 
+When playing with scripting, I found TRVs would randomly stop responding. It turns out this is because of the "1% rule" - each RF band has a "duty cycle" which is the maximum ratio of time on the air per hour. Basically, 1% means you can speak 36s per hour.
 
 ### openHABian
 
