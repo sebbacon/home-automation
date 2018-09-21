@@ -191,12 +191,14 @@ It's a bit of a fiddle working out how to set up new graphs for the first time, 
 
 ### Mobile phone
 
-#### Tasker
+As well as installing the openhab client (which displays `sitemaps` configured as above), I've installed [Tasker](https://tasker.joaoapps.com/), as an experiment in automating things when I leave home.
 
-#### Openhab client
+Tasker is a very powerful and complex system for setting up rules for automating stuff on your phone. I've installed it because I something that detects my presence at home, so I can build up some rules for automatically turning on holiday mode.  Tasker can use proximity to specific mobile phone masts for this, which uses considerably less battery than GPS. When I'm near a given list of masts, I've set up Tasker to send an HTTP POST to the Openhab REST API to toggle a "Phone presence" switch.
 
-## System administrivia
+If I decide it's accurate enough, the plan is to put it on my partner's phone too, and then when none of us is in, automatically pop up Openhab on my phone with a message asking if I want to turn on Vacation mode.
 
-### Backups
+## Backups
 
-### Email
+It took a few days to get a system that I was happy with. It would be horrible to lose it all. Backups are important. [Here's some notes I made about backing up the system](https://github.com/sebbacon/home-automation/issues/3).
+
+As well as a full disk image, I've got incremental backups of the configuration, including a JSON dump of the current programme state (created via [this script](), which [hasn't yet](https://github.com/hackercowboy/python-maxcube-api/pull/15) been merged into `max-cube-python`, so until it is you'll want to use [my fork](https://github.com/sebbacon/python-maxcube-api/tree/add-program-setting)).
