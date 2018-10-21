@@ -10,6 +10,7 @@ Group FirstFloor
 Group Attic
 Group Batteries
 Group ThermostatMode
+Group ThermostatSetter
 Group:Switch:OR(ON,OFF) Batteries  "Low Batteries [%d]"
 Group:Number:MAX Valves  "Maximum TRV open [%d%%]"
 

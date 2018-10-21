@@ -19,7 +19,7 @@ when
      Item holiday_switch changed to ON
 then
      ThermostatMode.members.forEach(item, i | sendCommand(item, "MANUAL"))
-     ThermostatMode.members.forEach(item, i | sendCommand(item, 14))
+     ThermostatSetter.members.forEach(item, i | sendCommand(item, 14))
 end
 
 rule "Holiday mode off"
