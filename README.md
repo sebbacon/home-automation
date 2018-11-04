@@ -20,7 +20,7 @@ It's something like this:
 
 The most expensive part is the thermostatic radiator control system.
 
-The [EQ Max system](https://www.conrad-electronic.co.uk/ce/en/overview/0812043/MAX-Wireless-Heating-Control) is the best value system out there, and apparently fairly reliable.
+The [EQ Max system](https://www.conrad-electronic.co.uk/ce/en/overview/0812043/MAX-Wireless-Heating-Control) is the best value system out there, and apparently fairly reliable. It's worth mentioning <a href="https://www.tado.com">Tado</a>, which  *appears* to do much of the following for you, but it's a lot more expensive.
 
 The [thermostat heads](https://www.conrad-electronic.co.uk/ce/en/product/1378424/MAX-Wireless-thermostat-head-Basic?ref=list) communicate over 868MHz RF to a ["Cube" device](https://www.conrad-electronic.co.uk/ce/en/product/560896/MAX-Cube-Lan-Gateway-Cube?ref=list). The Cube allows you to TRVs into rooms, set programs (e.g. *21 degrees centigrade between 0900 and 1300 on a Monday*),  check battery life, etc. The cube is controlled via Java software which runs as a web server on your computer. It is packaged for Windows and Mac but a community member has helpfully [repackaged it for Linux](https://github.com/shawn-ogg/maxapp_linux_installer). The protocol [has been reverse engineered](https://github.com/Bouni/max-cube-protocol), of which there are various implementations around the web.
 
