@@ -1,5 +1,6 @@
 #!/bin/env python3
 import argparse
+import stat
 import subprocess
 import shutil
 import tempfile
@@ -166,6 +167,8 @@ def main():
         f.write(template.format("\n".join(instructions)))
         f.flush()
         shutil.copy(f.name, target_file)
+        st = os.stat(target_file)
+        os.chmod(target_file, st.st_mode | stat.S_IEXEC)
         subprocess.check_call("homegear -e runscript Prog.php", shell=True)
 
 
