@@ -18,12 +18,12 @@ devices = {
     "living room front": "OEQ1040676",
     "living room back": "OEQ1039575",
     "kitchen": "MEQ1821372",
-    # "study": "OEQ1039499",
+    "study": "OEQ1039499",
     "wall thermometer": "OEQ1447059",
-    # "guest bedroom": "OEQ1039384",
-    # "beth bedroom": "OEQ1041021",
-    # "master bedroom": "OEQ1040288",
-    # "samuel bedroom": "OEQ1039491",
+    "guest bedroom": "OEQ1039384",
+    "beth bedroom": "OEQ1041021",
+    "master bedroom": "OEQ1040288",
+    "samuel bedroom": "OEQ1039491",
 }
 ON = True
 OFF = False
@@ -31,18 +31,18 @@ OFF = False
 # Went from 17 to 21 at 17:00
 max_slots = 13
 living_space_schedule = {
-    "monday": {"0650": 21, "1600": 20, "1700": 21, "2230": OFF},
+    "monday": {"0650": 21, "0900": 20, "1700": 21, "2230": OFF},
     "tuesday": {
         "0650": 21,
-        "1600": 20,
+        "0900": 20,
         "1700": 21,
         "2140": OFF,
     },  # XXXX how does the TRV know the day and time?!
-    "wednesday": {"0650": 21, "1600": 20, "1700": 21, "2230": OFF},
-    "thursday": {"0650": 21, "1600": 20, "1700": 21, "2230": OFF},
-    "friday": {"0650": 21, "1600": 20, "1700": 21, "2230": OFF},
-    "saturday": {"0650": 21, "1600": 20, "1700": 21, "2230": OFF},
-    "sunday": {"0650": 21, "1600": 20, "1700": 21, "2230": OFF},
+    "wednesday": {"0650": 21, "0900": 20, "1700": 21, "2230": OFF},
+    "thursday": {"0650": 21, "090": 20, "1700": 21, "2230": OFF},
+    "friday": {"0650": 21, "0900": 20, "1700": 21, "2230": OFF},
+    "saturday": {"0650": 21, "0900": 20, "1700": 21, "2230": OFF},
+    "sunday": {"0650": 21, "0900": 20, "1700": 21, "2230": OFF},
 }
 
 holiday_schedule = {
@@ -82,11 +82,11 @@ normal_schedules = {
     "kitchen": living_space_schedule,
     "guest bedroom": holiday_schedule,
     "master bedroom": {
-        "monday": {"0650": 18, "0900": 21, "2230": 16},
-        "tuesday": {"0650": 18, "0900": 21, "2230": 16},
-        "wednesday": {"0650": 18, "0900": 21, "2230": 16},
-        "thursday": {"0650": 18, "0900": 21, "2230": 16},
-        "friday": {"0650": 18, "0900": 21, "2230": 16},
+        "monday": {"0650": 18, "0900": 21, "1600": 18, "2230": 16},
+        "tuesday": {"0650": 18, "0900": 21, "2000": 18, "2230": 16},
+        "wednesday": {"0650": 18, "0900": 21, "1600": 18, "2230": 16},
+        "thursday": {"0650": 18, "0900": 21, "1600": 18, "2230": 16},
+        "friday": {"0650": 18, "0900": 21, "1600": 18, "2230": 16},
         "saturday": {"0650": 19, "0830": 16, "2130": 18, "2300": 16},
         "saturday": {"0650": 19, "0830": 16, "2130": 18, "2300": 16},
     },
@@ -129,7 +129,6 @@ def time_to_mins(time):
 
 
 def main():
-    assert os.geteuid() == 0, "Must be run as root"
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--schedule", type=str, choices=["guest", "normal", "holiday"], required=True
