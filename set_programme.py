@@ -1,4 +1,11 @@
 #!/usr/bin/python3
+"""This script is driven by dictionaries of per-room schedules.
+
+The times are the times a temperature should *start*, e.g. `{"0650": 21}` means "turn it to 21C at 06:50".
+
+
+
+"""
 import argparse
 import stat
 import subprocess
@@ -22,7 +29,7 @@ ON = True
 OFF = False
 # https://ref.homegear.eu/device.html?directory=MAX%21&file=BC-RT-TRX-CyG.xml&familyLink=max&name=BC-RT-TRX-CyG
 # Went from 17 to 21 at 17:00
-
+max_slots = 13
 living_space_schedule = {
     "monday": {"0650": 21, "1600": 20, "1700": 21, "2230": OFF},
     "tuesday": {
@@ -137,12 +144,15 @@ def main():
 
     instructions = []
     # homegear -e 'rc print_r($hg->putParamset(4, 0, array("ENDTIME_WEDNESDAY_1" => 1200, "TEMPERATURE_WEDNESDAY_1" => 32)));'
-
+    # XXX I'm not sure what happens when I set the holiday schedule. In the evening, while the prog obviously changes, the temp does not change to 11.
+    # Either you need to overwrite all the other slots with something
+    # Or....?
     for device, device_code in devices.items():
         schedule = schedules[device]
         instructions.append(f"$peerId = $hg->getPeerId(1, '{device_code}')[0];")
         instructions.append(f"$hg->setValue('{device_code}:1', 'AUTO_MODE', true);")
         settings_instructions = []
+        i = 1
         for day, times in schedule.items():
             for i, (t, temp) in enumerate(times.items(), start=1):
                 t = time_to_mins(t)
@@ -152,6 +162,11 @@ def main():
                 settings_instructions.append(
                     f"'TEMPERATURE_{day.upper()}_{i}' => {temp}"
                 )
+        while i < 13:
+            i += 1
+            # Overwrite the rest of the temp slots with the last value
+            settings_instructions.append(f"'ENDTIME_{day.upper()}_{i}' => {t}")
+            settings_instructions.append(f"'TEMPERATURE_{day.upper()}_{i}' => {temp}")
         instructions.append(
             f"$hg->putParamset($peerId, 0, array({', '.join(settings_instructions)}));"
         )
@@ -167,8 +182,7 @@ def main():
         f.write(template.format("\n".join(instructions)))
         f.flush()
         shutil.copy(f.name, target_file)
-        st = os.stat(target_file)
-        os.chmod(target_file, st.st_mode | stat.S_IEXEC)
+        os.chmod(target_file, 0o775)
         subprocess.check_call("homegear -e runscript Prog.php", shell=True)
 
 
